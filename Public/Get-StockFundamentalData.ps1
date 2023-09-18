@@ -156,6 +156,28 @@ Function Get-StockFundamentalData
         # )
 
         $balance = @(
+            "TotalAssets"
+            "CurrentAssets"
+            "CashCashEquivalentsAndShortTermInvestments"
+            "CashAndCashEquivalents"
+            "CashFinancial"
+            "CashEquivalents"
+            "OtherShortTermInvestments"
+            "Receivables"
+            "GrossAccountsReceivable"
+            "AllowanceForDoubtfulAccountsReceivable"
+            "Inventory"
+            "RawMaterials"
+            "WorkInProcess"
+            "FinishedGoods"
+            "CurrentDeferredAssets"
+            "CurrentDeferredTaxesAssets"
+            "HedgingAssetsCurrent"
+            "OtherCurrentAssets"
+            
+        )
+
+        $balance = @(
             "PreferredSharesNumber"
             "OrdinarySharesNumber"
             "ShareIssued"
