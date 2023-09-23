@@ -17,9 +17,11 @@ Function Get-StockFundamentalData
             "https://query2.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/premium/timeseries/$Symbol`?lang=en-US&region=US&symbol=$Symbol`&padTimeSeries=true&type="
         $uriSuffix = "&merge=false&period1=&period2=1691511894&corsDomain=finance.yahoo.com"
 
-        ### Forcing to "quarterly" for now.  Having "annual" as an option could lead to mixing in the database.
-        ### Annual and TTM values can be derived from the quarters in SQL or Power BI.
-        ### Leaving the options in code in case a suitable need arises to choose a frequency.
+        if ((Get-PSCallStack)[1].Command -eq "Add-StockFundamentalData")
+        { $stockID = (Invoke-Sqlcmd @Script:db -Query "SELECT [StockID] FROM [dbo].[STOCK] WHERE [StockSymbol] = '$Symbol'").StockID }
+
+        ### Forcing to "quarterly" for now.  Having "annual" as an option could lead to context mixing in the database.
+        ### Annual and TTM values can be derived from the quarters in SQL or Power BI anyway, so may not worry about it.
         # $frequency = switch ($Period)
         # {
         #     "Quarter" { "quarterly" }
@@ -29,152 +31,102 @@ Function Get-StockFundamentalData
         $frequency = "quarterly"
 
         $income = @(
+            "OperatingRevenue"
+            "ExciseTaxes"
             "TotalRevenue"
-            #"OperatingRevenue"
             "CostOfRevenue"
             "GrossProfit"
+            "SalariesAndWages"
+            "RentAndLandingFees"
+            "InsuranceAndClaims"
+            "OtherGandA"
+            "GeneralAndAdministrativeExpense"
+            "SellingAndMarketingExpense"
+            "SellingGeneralAndAdministration"
+            "ResearchAndDevelopment"
+            "DepreciationIncomeStatement"
+            "AmortizationOfIntangiblesIncomeStatement"
+            "Amortization"
+            "DepreciationAndAmortizationInIncomeStatement"
+            "DepletionIncomeStatement"
+            "DepreciationAmortizationDepletionIncomeStatement"
+            "ProvisionForDoubtfulAccounts"
+            "OtherTaxes"
+            "OtherOperatingExpenses"
             "OperatingExpense"
-            # "SellingGeneralAndAdministration"
-            # "ResearchAndDevelopment"
-            # "OtherOperatingExpenses"
             "OperatingIncome"
+            "InterestIncomeNonOperating"
+            "InterestExpenseNonOperating"
+            "TotalOtherFinanceCost"
+            "NetNonOperatingInterestIncomeExpense"
+            "GainOnSaleOfSecurity"
+            "EarningsFromEquityInterest"
+            "SecuritiesAmortization"
+            "RestructuringAndMergernAcquisition"
+            "ImpairmentOfCapitalAssets"
+            "WriteOff"
+            "OtherSpecialCharges"
+            "GainOnSaleOfBusiness"
+            "GainOnSaleOfPPE"
+            "SpecialIncomeCharges"
+            "OtherNonOperatingIncomeExpenses"
+            "OtherIncomeExpense"
             "PretaxIncome"
             "TaxProvision"
+            "EarningsFromEquityInterestNetOfTax"
+            "NetIncomeContinuousOperations"
+            "NetIncomeDiscontinuousOperations"
+            "NetIncomeExtraordinary"
+            "NetIncomeFromTaxLossCarryforward"
+            "NetIncomeIncludingNoncontrollingInterests"
+            "MinorityInterests"
             "NetIncome"
+            "PreferredStockDividends"
+            "OtherunderPreferredStockDividend"
+            "NetIncomeCommonStockholders"
+            "AverageDilutionEarnings"
+            "DilutedNIAvailtoComStockholders"
+            "BasicContinuousOperations"
+            "BasicDiscontinuousOperations"
+            "BasicExtraordinary"
+            "BasicAccountingChange"
+            "TaxLossCarryforwardBasicEPS"
+            "BasicEPSOtherGainsLosses"
+            "BasicEPS"
+            "DilutedContinuousOperations"
+            "DilutedDiscontinuousOperations"
+            "DilutedExtraordinary"
+            "DilutedAccountingChange"
+            "TaxLossCarryforwardDilutedEPS"
+            "DilutedEPSOtherGainsLosses"
+            "DilutedEPS"
             "BasicAverageShares"
             "DilutedAverageShares"
-            "BasicEPS"
-            "DilutedEPS"
-        
-            # "NetNonOperatingInterestIncomeExpense"
-            # "InterestIncomeNonOperating"
-            # "InterestExpenseNonOperating"
-            # "OtherIncomeExpense"
-            # "GainOnSaleOfSecurity"
-            # "EarningsFromEquityInterest"
-            # "SpecialIncomeCharges"
-            # "RestructuringAndMergernAcquisition"
-        )
-
-        # $income = @(
-        #     "TaxEffectOfUnusualItems"
-        #     "TaxRateForCalcs"
-        #     "NormalizedEBITDA"
-        #     "NormalizedDilutedEPS"
-        #     "NormalizedBasicEPS"
-        #     "TotalUnusualItems"
-        #     "TotalUnusualItemsExcludingGoodwill"
-        #     "NetIncomeFromContinuingOperationNetMinorityInterest"
-        #     "ReconciledDepreciation"
-        #     "ReconciledCostOfRevenue"
-        #     "EBITDA"
-        #     "EBIT"
-        #     "NetInterestIncome"
-        #     "InterestExpense"
-        #     "InterestIncome"
-        #     "ContinuingAndDiscontinuedDilutedEPS"
-        #     "ContinuingAndDiscontinuedBasicEPS"
-        #     "NormalizedIncome"
-        #     "NetIncomeFromContinuingAndDiscontinuedOperation"
-        #     "TotalExpenses"
-        #     "RentExpenseSupplemental"
-        #     "ReportedNormalizedDilutedEPS"
-        #     "ReportedNormalizedBasicEPS"
-        #     "TotalOperatingIncomeAsReported"
-        #     "DividendPerShare"
-        #     "DilutedAverageShares"
-        #     "BasicAverageShares"
-        #     "DilutedEPS"
-        #     "DilutedEPSOtherGainsLosses"
-        #     "TaxLossCarryforwardDilutedEPS"
-        #     "DilutedAccountingChange"
-        #     "DilutedExtraordinary"
-        #     "DilutedDiscontinuousOperations"
-        #     "DilutedContinuousOperations"
-        #     "BasicEPS"
-        #     "BasicEPSOtherGainsLosses"
-        #     "TaxLossCarryforwardBasicEPS"
-        #     "BasicAccountingChange"
-        #     "BasicExtraordinary"
-        #     "BasicDiscontinuousOperations"
-        #     "BasicContinuousOperations"
-        #     "DilutedNIAvailtoComStockholders"
-        #     "AverageDilutionEarnings"
-        #     "NetIncomeCommonStockholders"
-        #     "OtherunderPreferredStockDividend"
-        #     "PreferredStockDividends"
-        #     "NetIncome"
-        #     "MinorityInterests"
-        #     "NetIncomeIncludingNoncontrollingInterests"
-        #     "NetIncomeFromTaxLossCarryforward"
-        #     "NetIncomeExtraordinary"
-        #     "NetIncomeDiscontinuousOperations"
-        #     "NetIncomeContinuousOperations"
-        #     "EarningsFromEquityInterestNetOfTax"
-        #     "TaxProvision"
-        #     "PretaxIncome"
-        #     "OtherIncomeExpense"
-        #     "OtherNonOperatingIncomeExpenses"
-        #     "SpecialIncomeCharges"
-        #     "GainOnSaleOfPPE"
-        #     "GainOnSaleOfBusiness"
-        #     "OtherSpecialCharges"
-        #     "WriteOff"
-        #     "ImpairmentOfCapitalAssets"
-        #     "RestructuringAndMergernAcquisition"
-        #     "SecuritiesAmortization"
-        #     "EarningsFromEquityInterest"
-        #     "GainOnSaleOfSecurity"
-        #     "NetNonOperatingInterestIncomeExpense"
-        #     "TotalOtherFinanceCost"
-        #     "InterestExpenseNonOperating"
-        #     "InterestIncomeNonOperating"
-        #     "OperatingIncome"
-        #     "OperatingExpense"
-        #     "OtherOperatingExpenses"
-        #     "OtherTaxes"
-        #     "ProvisionForDoubtfulAccounts"
-        #     "DepreciationAmortizationDepletionIncomeStatement"
-        #     "DepletionIncomeStatement"
-        #     "DepreciationAndAmortizationInIncomeStatement"
-        #     "Amortization"
-        #     "AmortizationOfIntangiblesIncomeStatement"
-        #     "DepreciationIncomeStatement"
-        #     "ResearchAndDevelopment"
-        #     "SellingGeneralAndAdministration"
-        #     "SellingAndMarketingExpense"
-        #     "GeneralAndAdministrativeExpense"
-        #     "OtherGandA"
-        #     "InsuranceAndClaims"
-        #     "RentAndLandingFees"
-        #     "SalariesAndWages"
-        #     "GrossProfit"
-        #     "CostOfRevenue"
-        #     "TotalRevenue"
-        #     "ExciseTaxes"
-        #     "OperatingRevenue"
-        # )
-
-        $balance = @(
-            "TotalAssets"
-            "CurrentAssets"
-            "CashCashEquivalentsAndShortTermInvestments"
-            "CashAndCashEquivalents"
-            "CashFinancial"
-            "CashEquivalents"
-            "OtherShortTermInvestments"
-            "Receivables"
-            "GrossAccountsReceivable"
-            "AllowanceForDoubtfulAccountsReceivable"
-            "Inventory"
-            "RawMaterials"
-            "WorkInProcess"
-            "FinishedGoods"
-            "CurrentDeferredAssets"
-            "CurrentDeferredTaxesAssets"
-            "HedgingAssetsCurrent"
-            "OtherCurrentAssets"
-            
+            "DividendPerShare"
+            "TotalOperatingIncomeAsReported"
+            "ReportedNormalizedBasicEPS"
+            "ReportedNormalizedDilutedEPS"
+            "RentExpenseSupplemental"
+            "TotalExpenses"
+            "NetIncomeFromContinuingAndDiscontinuedOperation"
+            "NormalizedIncome"
+            "ContinuingAndDiscontinuedBasicEPS"
+            "ContinuingAndDiscontinuedDilutedEPS"
+            "InterestIncome"
+            "InterestExpense"
+            "NetInterestIncome"
+            "EBIT"
+            "EBITDA"
+            "ReconciledCostOfRevenue"
+            "ReconciledDepreciation"
+            "NetIncomeFromContinuingOperationNetMinorityInterest"
+            "TotalUnusualItemsExcludingGoodwill"
+            "TotalUnusualItems"
+            "NormalizedBasicEPS"
+            "NormalizedDilutedEPS"
+            "NormalizedEBITDA"
+            "TaxRateForCalcs"
+            "TaxEffectOfUnusualItems"
         )
 
         $balance = @(
@@ -468,12 +420,40 @@ Function Get-StockFundamentalData
     
             for ($a = 0; $a -lt $dates.Count; $a++)
             {
-                $temp = [ordered]@{"StockSymbol" = $Symbol; "ReportDate" = $dates[$a]}
-    
+                $temp = switch ((Get-PSCallStack)[1].Command)
+                {
+                    "Add-StockFundamentalData" { [ordered]@{"StockID" = [int]$stockID; "ReportDate" = $dates[$a]} }
+                    Default { [ordered]@{"StockSymbol" = $Symbol; "ReportDate" = $dates[$a]} }
+                }
+
                 foreach ($x in $body)
                 {
-                   try { $temp.Add($x,$data[$data.meta.type.IndexOf("quarterly$x")]."quarterly$x"[$a].reportedValue.raw) }
-                   catch { $temp.Add($x,$null) }
+                    ### The simplest way to handle zeroes, decimals, bigints, and nulls mixed in reports with Yahoo's system
+                    ### The "0" in finally will catch decimals or floats (shudder) that are "0.0"
+                    try
+                    {
+                        switch ($q)
+                        {
+                            "IncomeStatement"
+                            {
+                                if (@("BasicEPS","DilutedEPS","DividendPerShare","NormalizedBasicEPS","NormalizedDilutedEPS","TaxRateForCalcs") -notcontains $x)
+                                { $temp.Add($x,[Int64]($data[$data.meta.type.IndexOf("quarterly$x")]."quarterly$x"[$a].reportedValue.raw)) }
+                                else
+                                { $temp.Add($x,[Decimal]($data[$data.meta.type.IndexOf("quarterly$x")]."quarterly$x"[$a].reportedValue.raw)) }
+                                
+                                break
+                            }
+
+                            Default
+                            { $temp.Add($x,[Int64]($data[$data.meta.type.IndexOf("quarterly$x")]."quarterly$x"[$a].reportedValue.raw)) }
+                        }
+                    }
+                    catch { $temp.Add($x,$null) }
+                    finally
+                    {
+                        if ($temp.$x -eq 0)
+                        { $temp.$x = $null }
+                    }
                 }
     
                 [void]$output.Add([PSCustomObject]$temp)
@@ -483,5 +463,3 @@ Function Get-StockFundamentalData
         return $output
     }
 }
-
-

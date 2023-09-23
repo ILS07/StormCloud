@@ -1,124 +1,42 @@
-## Income Statement
-OperatingRevenue
-CostOfRevenue
-GrossProfit
-OperatingExpense
-	# SellingGeneralAndAdministration
-	# ResearchAndDevelopment
-	# DepAmor
-	# OtherOperatingExpenses
-OperatingIncome
-NetNonOperatingInterestIncomeExpense
-OtherIncomeExpense
-PretaxIncome
-TaxProvision
-NetIncomeCommonStockholders
+Function Add-StockFundamentalData
+{
+    [CmdletBinding()]
+    param (
+        [Parameter()][String]$Symbol,
+        [Parameter(Mandatory)]
+            [ValidateSet("IncomeStatement","BalanceSheet","CashFlowStatement")][String[]]$Report
+    )
 
-BasicAverageShares
-DilutedAverageShares
+    PROCESS
+    {
+        if ($null -ne ($stockID = (Invoke-Sqlcmd @Script:db -Query "SELECT [StockID] FROM [dbo].[STOCK] WHERE [StockSymbol] = '$Symbol'").StockID))
+        {
+            foreach ($a in $Report)
+            {
+                $table = switch ($a)
+                {
+                    "IncomeStatement"{ "INCOME_STATEMENT" }
+                    "BalanceSheet" { "BALANCE_SHEET" }
+                    "CashFlowStatement" { "CASH_FLOW" }
+                }
 
-EBIT
-NormalizedEBITDA
+                $tempPath = "$((Invoke-Sqlcmd -Query "SELECT SERVERPROPERTY('InstanceDefaultDataPath')").Column1)$Symbol`_$a.csv"
 
-######################################################################
+                $excludeDates = @(Invoke-Sqlcmd @Script:db -Query "SELECT [ReportDate] FROM [dbo].[$table] WHERE [StockID] = $stockID" | Select-Object ReportDate)
 
-### INCOME STATEMENT
-Revenue
-Cost of Revenue
-Gross Profit
-Operating Expense
-Operating Income
-Intereset Income or Expense
-Other Income or Expense
-Pretax Income
-Income Tax
-Net Income
-Diluted Net Income
-Basic EPS
-Diluted EPS
-Basic Shares Out
-Diluted Shares Out
+                (Get-StockFundamentalData -Symbol $Symbol -Report $a | Where-Object { $excludeDates -notcontains $_.ReportDate }) | `
+                    ConvertTo-Csv -NoTypeInformation | ForEach-Object { $_.Replace('"','') } | Out-File $tempPath -Force
 
-######################################################################
+                Invoke-Sqlcmd @Script:db -Query ("BULK INSERT [dbo].[$table] FROM '$tempPath' WITH ( FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', FIRSTROW = 2)")
+                
+                try { Remove-Item -Path $tempPath -Force }
+                catch { }
 
-
-
-
-
-### Balance Sheet
-TotalAssets
-    CurrentAssets
-        CashCashEquivalentsAndShortTermInvestments
-        CashAndCashEquivalents
-            CashFinancial
-            CashEquivalents
-            OtherShortTermInvestments
-        Receivables
-            GrossAccountsReceivable
-            AllowanceForDoubtfulAccountsReceivable
-        Inventory
-            RawMaterials
-            WorkInProcess
-            FinishedGoods
-        CurrentDeferredAssets
-            CurrentDeferredTaxesAssets
-        HedgingAssetsCurrent
-        OtherCurrentAssets
-    TotalNonCurrentAssets
-        NetPPE
-        GrossPPE
-            Properties
-            LandAndImprovements
-            BuildingsAndImprovements
-            MachineryFurnitureEquipment
-            OtherProperties
-            Leases
-        AccumulatedDepreciation
-        GoodwillAndOtherIntangibleAssets
-            Goodwill
-            OtherIntangibleAssets
-        InvestmentsAndAdvances
-            LongTermEquityInvestment
-        NonCurrentDeferredAssets
-            NonCurrentDeferredTaxesAssets
-        OtherNonCurrentAssets
-TotalLiabilitiesNetMinorityInterest
-    CurrentLiabilities
-        PayablesAndAccruedExpenses
-            Payables
-                AccountsPayable
-                TotalTaxPayable
-                    IncomeTaxPayable
-                OtherPayable
-            CurrentAccruedExpenses
-        PensionandOtherPostRetirementBenefitPlansCurrent
-        CurrentDebtAndCapitalLeaseObligation
-            CurrentDebt
-        CurrentDeferredLiabilities
-            CurrentDeferredTaxesLiabilities
-            CurrentDeferredRevenue
-        OtherCurrentLiabilities
-    TotalNonCurrentLiabilitiesNetMinorityInterest
-        LongTermDebtAndCapitalLeaseObligation
-            LongTermDebt
-            LongTermCapitalLeaseObligation
-        NonCurrentDeferredLiabilities
-            NonCurrentDeferredTaxesLiabilities
-            NonCurrentDeferredRevenue
-        TradeandOtherPayablesNonCurrent
-        OtherNonCurrentLiabilities
-TotalEquityGrossMinorityInterest
-    StockholdersEquity
-        CapitalStock
-            PreferredStock
-            CommonStock
-        AdditionalPaidInCapital
-        RetainedEarnings
-        GainsLossesNotAffectingRetainedEarnings
-            ForeignCurrencyTranslationAdjustments
-            OtherEquityAdjustments
-        OtherEquityInterest
-    MinorityInterest
-
-
-### Cash Flow Statement
+                if ($Report.Count -gt 1)
+                { Start-Sleep -Milliseconds 750 }
+            }
+        }
+        else
+        { return $null }
+    }
+}
