@@ -35,7 +35,7 @@ Function Add-StockHistoricalData
             if ($Symbol.Count -gt 0)
             { $filter2 = "AND [stk].[StockSymbol] IN ('$($Symbol -join "','")')" }
 
-            $stocks = Invoke-Sqlcmd @db -Query `
+            $stocks = Invoke-Sqlcmd @Script:db -Query `
                 "SELECT
                 [stk].[StockID]
                 ,[stk].[StockSymbol]
@@ -109,7 +109,7 @@ Function Add-StockHistoricalData
 
                     try
                     {
-                        Invoke-Sqlcmd @db -Query ("BULK INSERT [dbo].[PRICE_HISTORY] FROM '$tempPath' WITH ( FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', FIRSTROW = 2)")
+                        Invoke-Sqlcmd @Script:db -Query ("BULK INSERT [dbo].[PRICE_HISTORY] FROM '$tempPath' WITH ( FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', FIRSTROW = 2)")
                         ### Remove temp file if the insert was successful, leaving it will help in troubleshooting if a formatting or datatype issue.
                         if ($?)
                         { Remove-Item -Path $tempPath -Force }
@@ -145,7 +145,7 @@ Function Add-StockHistoricalData
                         }
                     }
 
-                    Invoke-Sqlcmd @db -Query ($baseQuery + ($entries -join ","))
+                    Invoke-Sqlcmd @Script:db -Query ($baseQuery + ($entries -join ","))
                 }
 
                 if ($stocks.Count -gt 1) { Start-Sleep -Milliseconds $Delay }
