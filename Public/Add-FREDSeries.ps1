@@ -9,7 +9,7 @@ Function Add-FREDSeries
 
     PROCESS
     {
-        if ($null -ne (Invoke-Sqlcmd @db -Query "SELECT [FredSeriesID] FROM [FRED_SERIES] WHERE [FredSeriesID] = '$SeriesID'"))
+        if ($null -ne (Invoke-Sqlcmd @Script:db -Query "SELECT [FredSeriesID] FROM [FRED_SERIES] WHERE [FredSeriesID] = '$SeriesID'"))
         { Write-Output "'$SeriesID' already exists in the database."; return $null }
 
         try
@@ -23,10 +23,10 @@ Function Add-FREDSeries
         {
             foreach ($x in $tree[1..($tree.Count - 1)])
             {
-                if ($null -eq (Invoke-Sqlcmd @db -Query `
+                if ($null -eq (Invoke-Sqlcmd @Script:db -Query `
                     "SELECT [FredCatID] FROM [dbo].[FRED_CATEGORY] WHERE [FredCatID] = $($x.ID)"))
                 {
-                    Invoke-Sqlcmd @db -Query `
+                    Invoke-Sqlcmd @Script:db -Query `
                         "EXEC [dbo].[Add_FRED_Category]
                             @parentCatID = $($x.ParentID)
                             ,@thisCatID = $($x.ID)
@@ -36,7 +36,7 @@ Function Add-FREDSeries
 
             ### Some Series show "Daily, 7-Day" and the like, so we're taking the first
             ### frequency listed if there are more than one.  May need periodic checks.
-            Invoke-Sqlcmd @db -Query `
+            Invoke-Sqlcmd @Script:db -Query `
                 "EXEC [dbo].[Add_FRED_Series]
                     @seriesID = '$($series.id)'
                     ,@categoryID = $($tree[-1].id)

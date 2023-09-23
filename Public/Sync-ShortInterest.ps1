@@ -8,12 +8,12 @@ Function Sync-ShortInterest
         if ($Symbol.Count -gt 0)
         { $clause = "WHERE [StockSymbol] IN ('$($Symbol -join "','")')" }
 
-        $stocks = @(Invoke-Sqlcmd @db -Query "SELECT [StockSymbol] FROM [dbo].[STOCK] $clause")
+        $stocks = @(Invoke-Sqlcmd @Script:db -Query "SELECT [StockSymbol] FROM [dbo].[STOCK] $clause")
 
         if ($stocks.Count -gt 0)
         {
             foreach ($x in $stocks)
-            { Invoke-Sqlcmd @db -Query "EXEC [dbo].[Sync_Short_Interest] @stockSymbol = '$($x.StockSymbol)'" }
+            { Invoke-Sqlcmd @Script:db -Query "EXEC [dbo].[Sync_Short_Interest] @stockSymbol = '$($x.StockSymbol)'" }
         }
     }
 }

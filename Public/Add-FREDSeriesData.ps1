@@ -6,7 +6,7 @@ Function Add-FREDSeriesData
 
     BEGIN
     {
-        $getSeries = { Invoke-Sqlcmd -Database $Script:database -Query "SELECT TOP (1) * FROM [dbo].[FRED_SERIES] WHERE [FredSeriesID] = '$SeriesID'" }
+        $getSeries = { Invoke-Sqlcmd @Script:db -Query "SELECT TOP (1) * FROM [dbo].[FRED_SERIES] WHERE [FredSeriesID] = '$SeriesID'" }
 
         if ($null -eq ($series = (& $getSeries)))
         {
@@ -28,7 +28,7 @@ Function Add-FREDSeriesData
             ### I opted against using BULK INSERT due to complexity of implementation and will probably remove it from the Add-*HistoricalData
             ### function at some point. This uses regular insert up to the 1,000 row limit as many times as are needed to add the data.  It's
             ### not as fast or as light on the T-logs as BULK INSERT, but it's the next best thing, despite some math gynmastics.
-            $writeSQL = { Invoke-Sqlcmd -Database $Script:database -Query "INSERT INTO [dbo].[FRED_HISTORY] VALUES `n$($values -join ",`n")" }
+            $writeSQL = { Invoke-Sqlcmd @Script:db -Query "INSERT INTO [dbo].[FRED_HISTORY] VALUES `n$($values -join ",`n")" }
             
             if ($data.Count -le 1000)
             {

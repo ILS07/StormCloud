@@ -9,7 +9,7 @@ Function Add-IndexHistoricalData
         { $filter = "WHERE [idx].[IndexCode] IN ('$($Symbol -join "','")')" }
 
         ### Sticking with [StockSymbol] since passing to an existing function that was designed with that in mind.
-        $indexes = Invoke-Sqlcmd @db -Query `
+        $indexes = Invoke-Sqlcmd @Script:db -Query `
             "SELECT
             [idx].[IndexID]
             ,[idx].[IndexCode] AS [StockSymbol]
@@ -41,7 +41,7 @@ Function Add-IndexHistoricalData
 
                 try
                 {
-                    Invoke-Sqlcmd @db -Query ("BULK INSERT [dbo].[MARKET_INDEX_HISTORY] FROM '$tempPath' WITH ( FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', FIRSTROW = 2)")
+                    Invoke-Sqlcmd @Script:db -Query ("BULK INSERT [dbo].[MARKET_INDEX_HISTORY] FROM '$tempPath' WITH ( FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', FIRSTROW = 2)")
                     ### Remove temp file if the insert was successful, leaving it will help in troubleshooting if a formatting or datatype issue.
                     if ($?)
                     { Remove-Item -Path $tempPath -Force }
@@ -59,7 +59,7 @@ Function Add-IndexHistoricalData
                         "$([Math]::Round($entry.'Adj Close',4)),$($entry.Volume))")
                 }
 
-                Invoke-Sqlcmd @db -Query ("INSERT INTO [dbo].[MARKET_INDEX_HISTORY] VALUES " + ($entries -join ","))
+                Invoke-Sqlcmd @Script:db -Query ("INSERT INTO [dbo].[MARKET_INDEX_HISTORY] VALUES " + ($entries -join ","))
             }
         }
         

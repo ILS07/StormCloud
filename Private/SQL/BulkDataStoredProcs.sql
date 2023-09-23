@@ -29,10 +29,8 @@ BEGIN
     BEGIN
         INSERT INTO [dbo].[SEC_FILING_FORM] VALUES (@formType,NULL)
         SET @formID = (SELECT MAX([FormID]) FROM [dbo].[SEC_FILING_FORM])
+        INSERT INTO [FINDATA].[dbo].[SEC_FILING_FORM] VALUES (@formID,@formType,NULL)
     END
 
-    -- Easiest way to keep tables in sync is to write to both databases at the same time.
     INSERT INTO [BULKDATA].[dbo].[SEC_FILING_INDEX] VALUES (@dateFiled,@cikID,@formID,@fileName)
-	INSERT INTO [FINDATA].[dbo].[SEC_FILING_FORM] VALUES (@formID,@formType,NULL)
 END
-GO
