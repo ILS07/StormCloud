@@ -16,7 +16,7 @@ if ($PSVersionTable.PSVersion.Major -ge 6)
 $Script:database = "FINDATA"
 $Script:db = @{Database = $Script:database}
 
-$Script:chromeVer = "116"
+$Script:chromeVer = "117"
 $Script:userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/$Script:chromeVer.0.0.0 Safari/537.36"
 
 
