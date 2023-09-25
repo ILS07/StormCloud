@@ -12,6 +12,7 @@ Function Get-StockFundamentalData
     BEGIN
     {
         [System.Collections.ArrayList]$output = @()
+        $Symbol = $Symbol.Replace(".","-")
 
         $uriPrefix = `
             "https://query2.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/premium/timeseries/$Symbol`?lang=en-US&region=US&symbol=$Symbol`&padTimeSeries=true&type="
