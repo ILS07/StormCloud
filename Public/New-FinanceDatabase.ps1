@@ -97,6 +97,9 @@ Function New-FinanceDatabase
                     Write-Host "Complete" -ForegroundColor Green
                 }
 
+                ### Sync any existing FormIDs from BULKDATA to FINDATA
+                Invoke-Sqlcmd @db -Query "INSERT INTO [FINDATA].[dbo].[SEC_FILING_FORM] SELECT * FROM [BULKDATA].[dbo].[SEC_FILING_FORM]" 
+
                 Write-Host "The database has been created successfully!" -ForegroundColor Green
             }
 

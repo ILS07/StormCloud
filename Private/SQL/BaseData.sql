@@ -135,7 +135,7 @@ INSERT INTO [dbo].[GICS] VALUES
     ('302010','/5/2/1/','Beverages'),
     ('30201010','/5/2/1/1/','Brewers'),
     ('30201020','/5/2/1/2/','Distillers & Vintners'),
-    ('30201030','/5/2/1/3/','Soft Drinks & Non-alcoholic Beverages'),
+    ('30201030','/5/2/1/3/','Soft Drinks & Non-Alcoholic Beverages'),
     ('302020','/5/2/2/','Food Products'),
     ('30202010','/5/2/2/1/','Agricultural Products & Services'),
     ('30202030','/5/2/2/2/','Packaged Foods & Meats'),

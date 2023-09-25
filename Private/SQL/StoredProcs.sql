@@ -181,6 +181,8 @@ BEGIN
         @stockID INT = (SELECT [StockID] FROM [FINDATA].[dbo].[STOCK] WHERE [StockSymbol] = @stockSymbol)
         ,@mostRecent DATE
 
+
+
     IF @stockID IS NULL
     BEGIN
         RAISERROR('Symbol not found.',16,1)
@@ -204,6 +206,5 @@ BEGIN
 		INNER JOIN [FINDATA].[dbo].SEC_FILING_FORM [frm]
 			ON [frm].[FormType] = [sec].[FormType]
         WHERE [stk].[StockSymbol] = @stockSymbol AND [sec].[DateFiled] > @mostRecent
-
 END
 GO

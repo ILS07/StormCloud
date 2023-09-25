@@ -2,13 +2,15 @@ Function Add-StockFundamentalData
 {
     [CmdletBinding()]
     param (
-        [Parameter()][String]$Symbol,
-        [Parameter(Mandatory)]
-            [ValidateSet("IncomeStatement","BalanceSheet","CashFlowStatement")][String[]]$Report
+        [Parameter(Mandatory)][String]$Symbol,
+        [Parameter()][ValidateSet("IncomeStatement","BalanceSheet","CashFlowStatement")][String[]]$Report
     )
 
     PROCESS
     {
+        if ($Report.Count -eq 0)
+        { $Report = @("IncomeStatement","BalanceSheet","CashFlowStatement") }
+
         if ($null -ne ($stockID = (Invoke-Sqlcmd @Script:db -Query "SELECT [StockID] FROM [dbo].[STOCK] WHERE [StockSymbol] = '$Symbol'").StockID))
         {
             foreach ($a in $Report)
@@ -24,6 +26,9 @@ Function Add-StockFundamentalData
 
                 $excludeDates = @(Invoke-Sqlcmd @Script:db -Query "SELECT [ReportDate] FROM [dbo].[$table] WHERE [StockID] = $stockID" | Select-Object ReportDate)
 
+                ### 09/24/2023 - Found an issue where some statements aren't filed quarterly.
+                ### This results in a [PSCustomObject] being returned as opposed to an [Array].
+                ### Add a condition to not insert if GetTypeCode() -eq "PSCustomObject"
                 (Get-StockFundamentalData -Symbol $Symbol -Report $a | Where-Object { $excludeDates -notcontains $_.ReportDate }) | `
                     ConvertTo-Csv -NoTypeInformation | ForEach-Object { $_.Replace('"','') } | Out-File $tempPath -Force
 

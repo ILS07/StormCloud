@@ -14,5 +14,6 @@ Function Split-Stock
     
     # Apply to PRICE_HISTORY, SHORT_INTEREST, ??
     # Check on why Yahoo's math doesn't check out on splits. It's close, but not right.
+    # On second thought, check if Yahoo's price history is intact post-split and remove-n-replace.
     $split
 }
