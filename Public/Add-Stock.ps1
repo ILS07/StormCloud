@@ -6,7 +6,7 @@ Function Add-Stock
         [Parameter(Mandatory)][String[]]$Symbol,
         [Parameter()][Switch]$NoHistory = $false,
         [Parameter()][Switch]$NoFundamentals = $false,
-        [Parameter()][Switch]$NotActive = $false
+        [Parameter()][Switch]$Inactive = $false
     )
 
     PROCESS
@@ -59,7 +59,7 @@ Function Add-Stock
                 "EXEC [dbo].[Add_Stock]
                 @stockSymbol = '$s'
                 ,@stockName = '$($stockName.Replace("'","''"))'
-                ,@isActive = $($([int]!$NotActive.IsPresent))
+                ,@isActive = $($([int]!$Inactive.IsPresent))
                 ,@exchCode = $exch
                 ,@cusip = $cusip
                 ,@cik = $cik

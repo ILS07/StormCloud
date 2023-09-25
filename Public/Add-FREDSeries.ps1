@@ -4,6 +4,8 @@ Function Add-FREDSeries
     param
     (
         [Parameter(Mandatory)][String]$SeriesID,
+        [Parameter()][String]$CustomTitle,
+        [Parameter()][String]$CustomUnit,
         [Parameter()][Switch]$Inactive = $false
     )
 
@@ -40,12 +42,12 @@ Function Add-FREDSeries
                 "EXEC [dbo].[Add_FRED_Series]
                     @seriesID = '$($series.id)'
                     ,@categoryID = $($tree[-1].id)
-                    ,@seriesTitle = '$($series.title)'
+                    ,@seriesTitle = '$(if ($CustomTitle -ne '') {$CustomTitle} else {$series.title})'
                     ,@isActive = $([int]!$Inactive.IsPresent)
                     ,@observeStart = '$($series.observation_start)'
                     ,@observeEnd = '$($series.observation_end)'
                     ,@freqLabel = '$(if (($temp = $series.frequency.Split(",").Trim()).Count -gt 1) { $temp[0] } else { $temp })'
-                    ,@unitLabel = '$($series.units)'
+                    ,@unitLabel = '$(if ($CustomUnit -ne '') {$CustomUnit} else {$series.units})'
                     ,@adjusted = $(if ($series.seasonal_adjustment -like 'Not*') { 0 } else { 1 })
                     ,@published = '$([DateTime]$series.last_updated)'"
         }
