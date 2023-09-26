@@ -52,10 +52,22 @@ Function Get-StockHistoricalData
 
         Function GetTheData([String]$stockInput)
         {
+            $day = 0
+            $utcNow = [System.DateTimeOffset]::UtcNow.DateTime
+
+            # if (([System.DayOfWeek].GetFields()[2..6].Name -contains [System.DateTime]::Today.DayOfWeek -AND `
+            #     ($utcNow  -ge "20:00:00" -AND $utcNow.AddDays(1) -le '4:30:00')) `
+            #     -OR (@("Saturday","Sunday") -contains [System.DateTime]::Today.DayOfWeek))
+            # {
+            #     $day = 1
+            # }
+
+            # [System.DateTime]::Now.AddHours([Math]::Abs([System.DateTimeOffset]::Now.Offset.Hours)).ToString("HH:mm:ss") -eq '15:29:10'
+
             if ($PSCmdlet.ParameterSetName -like "*Max")
             {
                 $StartDate = -2177452800
-                $EndDate = [System.DateTime]::Today #.AddDays(1)
+                $EndDate = [System.DateTime]::Today.AddDays($day)
             }
             else
             {
