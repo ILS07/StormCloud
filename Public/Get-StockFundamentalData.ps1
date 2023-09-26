@@ -12,10 +12,10 @@ Function Get-StockFundamentalData
     BEGIN
     {
         [System.Collections.ArrayList]$output = @()
-        $Symbol = $Symbol.Replace(".","-")
+        $sym = $Symbol.Replace(".","-")
 
         $uriPrefix = `
-            "https://query2.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/premium/timeseries/$Symbol`?lang=en-US&region=US&symbol=$Symbol`&padTimeSeries=true&type="
+            "https://query2.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/premium/timeseries/$sym`?lang=en-US&region=US&symbol=$sym`&padTimeSeries=true&type="
         $uriSuffix = "&merge=false&period1=&period2=1691511894&corsDomain=finance.yahoo.com"
 
         if ((Get-PSCallStack)[1].Command -eq "Add-StockFundamentalData")
