@@ -40,15 +40,20 @@ Function Set-HistoricalDataParameters
         }
 
         ### Check market hours to know to avoid intraday activity that could result in incomplete volume or wrong high/low for the day.
-        $utcNow = ([System.DateTimeOffset]([System.DateTime]::Now)).UtcDateTime
+        # $utcNow = ([System.DateTimeOffset]([System.DateTime]::Now)).UtcDateTime
 
-        if (@("Sunday","Saturday") -notcontains $utcNow.DayOfWeek)
-        {
-            if ($utcNow.ToString("HH:mm:ss") -gt "20:01:00")
-            { $params.Add("EndDate",([System.DateTime]::Today.AddDays(1))) }
-            else { $params.Add("EndDate",([System.DateTime]::Today)) }
-        }
-        else { $params.Add("EndDate",([System.DateTime]::Today)) }
+        if ([System.DayOfWeek].GetFields()[2..6].Name -contains [System.DateTime]::Today.DayOfWeek -AND [System.DateTime]::Now -ge '17:30:00')
+        { $params.Add("EndDate",([System.DateTime]::Today.AddDays(1))) }
+        else
+        { $params.Add("EndDate",([System.DateTime]::Today)) }
+
+        # if (@("Sunday","Saturday") -notcontains $utcNow.DayOfWeek)
+        # {
+        #     if ($utcNow.ToString("HH:mm:ss") -gt "20:01:00")
+        #     { $params.Add("EndDate",([System.DateTime]::Today.AddDays(1))) }
+        #     else { $params.Add("EndDate",([System.DateTime]::Today)) }
+        # }
+        # else { $params.Add("EndDate",([System.DateTime]::Today)) }
 
         return $params
     }

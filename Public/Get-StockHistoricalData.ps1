@@ -52,12 +52,10 @@ Function Get-StockHistoricalData
 
         Function GetTheData([String]$stockInput)
         {
-            $day = 0
-            $utcNow = [System.DateTimeOffset]::UtcNow.DateTime
+            # $day = 0
+            # $now = [System.DateTime]::Now
 
-            # if (([System.DayOfWeek].GetFields()[2..6].Name -contains [System.DateTime]::Today.DayOfWeek -AND `
-            #     ($utcNow  -ge "20:00:00" -AND $utcNow.AddDays(1) -le '4:30:00')) `
-            #     -OR (@("Saturday","Sunday") -contains [System.DateTime]::Today.DayOfWeek))
+            # if ([System.DayOfWeek].GetFields()[2..6].Name -contains [System.DateTime]::Today.DayOfWeek -AND $now -ge '17:30:00')
             # {
             #     $day = 1
             # }
