@@ -67,7 +67,7 @@ Function Get-StockHistoricalData
             if ($PSCmdlet.ParameterSetName -like "*Max")
             {
                 $StartDate = -2177452800
-                $EndDate = [System.DateTime]::Today.AddDays($day)
+                $EndDate = [System.DateTime]::Today.AddDays(1)
             }
             else
             {

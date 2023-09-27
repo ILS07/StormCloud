@@ -9,12 +9,11 @@ Function Update-ShortInterest
 
     PROCESS
     {
-        $schedule = Invoke-Sqlcmd -Database BULKDATA -Query "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]"
-
-        if ($SettlementDate -ne "")
+        if ($SettlementDate -eq "")
         {
             ### Reference the nearest publish/settlement date combo from the short interest schedule.
-            $reference = ($schedule | Where-Object { $_.PublishDate -ge [System.DateTime]::Today })[0]
+            $reference = (Invoke-Sqlcmd -Database BULKDATA -Query "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]" | `
+                Where-Object { $_.PublishDate -ge [System.DateTime]::Today })[0]
 
             if ([System.DateTime]::Now.Date.ToShortDateString() -ge $reference.PublishDate.ToShortDateString())
             { $SettlementDate = $reference.SettlementDate.ToString('yyyy-MM-dd') }

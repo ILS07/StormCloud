@@ -4,8 +4,8 @@ Function Add-StockHistoricalData
     param
     (
         [Parameter()][String[]]$Symbol,
-        [Parameter()][ValidateSet("Price","Dividend","Split")][String[]]$Record,
-        [Parameter()][Int]$Delay = 600
+        [Parameter()][ValidateSet("Price","Dividend","Split")][String[]]$Record
+        #[Parameter()][Int]$Delay # = 600
     )
 
     BEGIN
@@ -148,10 +148,17 @@ Function Add-StockHistoricalData
                     Invoke-Sqlcmd @Script:db -Query ($baseQuery + ($entries -join ","))
                 }
 
-                if ($stocks.Count -gt 1) { Start-Sleep -Milliseconds $Delay }
+                ### Gradually increase the delay as the stock count goes up to avoid tiggering a block.
+                ### I think 2,000 per hour is Yahoo's limit, so playing it a little safe on the upper end.
+                switch ($stocks.Count)
+                {
+                    {$_ -le 1799} { Start-Sleep -Milliseconds 500 }
+                    #{$_ -ge 1001 -AND $_ -le 1799} { Start-Sleep -Milliseconds 850 }
+                    {$_ -ge 1800} { Start-Sleep -Milliseconds 1950 }
+                }
             }
             
-            if ($Record.Count -gt 1) { Start-Sleep -Milliseconds $Delay }
+            if ($Record.Count -gt 1) { Start-Sleep -Milliseconds 600 }
         }
     }
 }
