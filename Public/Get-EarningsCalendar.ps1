@@ -1,7 +1,7 @@
 Function Get-EarningsCalendar
 {
     [CmdletBinding()]
-    param ( [Parameter()][Int]$InNextDays = 1 )
+    param ( [Parameter()][Int]$InNextDays = 6 )
 
     BEGIN
     {

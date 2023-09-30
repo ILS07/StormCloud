@@ -93,9 +93,9 @@ Function Add-StockHistoricalData
                 if (($info = @(Get-StockHistoricalData @parameters | Where-Object { [DateTime]$_.Date -gt $x.Last })).Count -eq 0)
                 { continue }
 
-                ### Price is the heavy transaction hitter, so if there's more than 1,000 records, we'll use BULK INSERT from a
+                ### Price is the heavy transaction hitter, so if there's more than 100 records, we'll use BULK INSERT from a
                 ### CSV to help keep the transaction log size down. Anything a thousand or less will go through the loop for a max INSERT query.
-                if ($info.Count -gt 1000 -AND $y -eq "Price")
+                if ($info.Count -gt 100 -AND $y -eq "Price")
                 {
                     ### Use the folder holding the MDF file for temp storage of CSV since it's a known quantity.
                     ### Column names must be specified in-line for BULK, so can take some massaging to get them to align.
@@ -148,13 +148,13 @@ Function Add-StockHistoricalData
                     Invoke-Sqlcmd @Script:db -Query ($baseQuery + ($entries -join ","))
                 }
 
-                ### Gradually increase the delay as the stock count goes up to avoid tiggering a block.
+                ### Gradually increase the delay as the stock count goes up to avoid tiggering a block. It can run faster, but no rush.
                 ### I think 2,000 per hour is Yahoo's limit, so playing it a little safe on the upper end.
                 switch ($stocks.Count)
                 {
-                    {$_ -le 1799} { Start-Sleep -Milliseconds 500 }
+                    {$_ -le 1899} { Start-Sleep -Milliseconds 800 }
                     #{$_ -ge 1001 -AND $_ -le 1799} { Start-Sleep -Milliseconds 850 }
-                    {$_ -ge 1800} { Start-Sleep -Milliseconds 1950 }
+                    {$_ -ge 1900} { Start-Sleep -Milliseconds 1950 }
                 }
             }
             
