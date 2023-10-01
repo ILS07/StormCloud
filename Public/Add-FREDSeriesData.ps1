@@ -25,7 +25,6 @@ Function Add-FREDSeriesData
             if ($series.LastRecord.GetTypeCode() -ne "DBNull")
             { $data = $data | Where-Object { $_.date -gt [DateTime]$series.LastRecord} }
 
-            ### TO DO: Implement BULK INSERT if record count exceed 1,000...
             $writeSQL = { Invoke-Sqlcmd @Script:db -Query "INSERT INTO [dbo].[FRED_HISTORY] VALUES `n$($values -join ",`n")" }
             
             if ($data.Count -le 1000)
@@ -36,6 +35,7 @@ Function Add-FREDSeriesData
 
                 & $writeSQL
             }
+            ### TO DO: Implement BULK INSERT if record count exceed 1,000...
             elseif ($data.Count -gt 1000)
             {
                 $x = 0
@@ -52,7 +52,7 @@ Function Add-FREDSeriesData
 
                     $offset++
                     if ($x -eq ($data.Count - 1)) { break }
-
+                    
                     & $writeSQL
                 }
             }

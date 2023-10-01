@@ -27,6 +27,12 @@ Function Add-IndexHistoricalData
             if (($info = @(Get-StockHistoricalData @parameters | Where-Object { [DateTime]$_.Date -gt $x.Last })).Count -eq 0)
             { continue }
 
+            if ($x.StockSymbol -eq "^VIX")
+            {
+                foreach ($q in $info)
+                { $q.Volume = $null }
+            }
+
             if ($info.Count -gt 1000)
             {
                 ### Use the folder holding the MDF file for temp storage of CSV since it's a known quantity.
@@ -61,6 +67,8 @@ Function Add-IndexHistoricalData
 
                 Invoke-Sqlcmd @Script:db -Query ("INSERT INTO [dbo].[MARKET_INDEX_HISTORY] VALUES " + ($entries -join ","))
             }
+
+            Start-Sleep -Milliseconds 1500
         }
         
     }
