@@ -118,8 +118,14 @@ Function New-SECUserData
             2 { "$($last.ToLower())$(Get-Random -Minimum 191 -Maximum 8554)_$($first.ToLower())@$domain" }
         }
 
+        # return @{
+        #     "User-Agent" = "$first $last ($email)"
+        #     "Accept-Encoding" = "gzip, deflate"
+        #     "Host" = "www.sec.gov"
+        # }
+
         return @{
-            "User-Agent" = "$first $last ($email)"
+            "User-Agent" = "Mark Strong (mk.strongman332@gmail.com)"
             "Accept-Encoding" = "gzip, deflate"
             "Host" = "www.sec.gov"
         }
