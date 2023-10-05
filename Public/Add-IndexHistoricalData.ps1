@@ -27,11 +27,14 @@ Function Add-IndexHistoricalData
             if (($info = @(Get-StockHistoricalData @parameters | Where-Object { [DateTime]$_.Date -gt $x.Last })).Count -eq 0)
             { continue }
 
-            if ($x.StockSymbol -eq "^VIX")
-            {
-                foreach ($q in $info)
-                { $q.Volume = $null }
-            }
+            foreach ($a in ($info | Where-Object {$_.Volume -eq 0}))
+            { $a.Volume = "NULL" }
+
+            # if ($x.StockSymbol -eq "^VIX")
+            # {
+            #     foreach ($q in $info)
+            #     { $q.Volume = $null }
+            # }
 
             if ($info.Count -gt 1000)
             {
@@ -47,7 +50,7 @@ Function Add-IndexHistoricalData
 
                 try
                 {
-                    Invoke-Sqlcmd @Script:db -Query ("BULK INSERT [dbo].[MARKET_INDEX_HISTORY] FROM '$tempPath' WITH ( FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', FIRSTROW = 2)")
+                    Invoke-Sqlcmd @Script:db -Query ("BULK INSERT [dbo].[MARKET_INDEX_HISTORY] FROM '$tempPath' WITH (FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', FIRSTROW = 2)")
                     ### Remove temp file if the insert was successful, leaving it will help in troubleshooting if a formatting or datatype issue.
                     if ($?)
                     { Remove-Item -Path $tempPath -Force }
@@ -60,16 +63,16 @@ Function Add-IndexHistoricalData
 
                 foreach ($a in $info)
                 {
-                    [void]$entries.Add("($($x.IndexID),'$($entry.Date)',$([Math]::Round($entry.Open,4))," + `
-                        "$([Math]::Round($entry.High,4)),$([Math]::Round($entry.Low,4)),$([Math]::Round($entry.Close,4))," + `
-                        "$([Math]::Round($entry.'Adj Close',4)),$($entry.Volume))")
+                    [void]$entries.Add("($($x.IndexID),'$($a.Date)',$([Math]::Round($a.Open,4))," + `
+                        "$([Math]::Round($a.High,4)),$([Math]::Round($a.Low,4)),$([Math]::Round($a.Close,4))," + `
+                        "$([Math]::Round($a.'Adj Close',4)),$($a.Volume))")
                 }
 
+                #"INSERT INTO [dbo].[MARKET_INDEX_HISTORY] VALUES " + ($entries -join ",")
                 Invoke-Sqlcmd @Script:db -Query ("INSERT INTO [dbo].[MARKET_INDEX_HISTORY] VALUES " + ($entries -join ","))
             }
 
             Start-Sleep -Milliseconds 1500
         }
-        
     }
 }

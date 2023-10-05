@@ -16,7 +16,7 @@ Function Get-StockFundamentalData
 
         $uriPrefix = `
             "https://query2.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/premium/timeseries/$sym`?lang=en-US&region=US&symbol=$sym`&padTimeSeries=true&type="
-        $uriSuffix = "&merge=false&period1=&period2=1691511894&corsDomain=finance.yahoo.com"
+        $uriSuffix = "&merge=false&period1=&period2=$(Get-Date ([System.DateTime]::Today.AddDays(1)) -UFormat %s)&corsDomain=finance.yahoo.com"
 
         if ((Get-PSCallStack)[1].Command -eq "Add-StockFundamentalData")
         { $stockID = (Invoke-Sqlcmd @Script:db -Query "SELECT [StockID] FROM [dbo].[STOCK] WHERE [StockSymbol] = '$Symbol'").StockID }

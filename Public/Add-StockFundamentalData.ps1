@@ -24,7 +24,8 @@ Function Add-StockFundamentalData
 
                 $tempPath = "$((Invoke-Sqlcmd -Query "SELECT SERVERPROPERTY('InstanceDefaultDataPath')").Column1)$Symbol`_$a.csv"
 
-                $excludeDates = @(Invoke-Sqlcmd @Script:db -Query "SELECT [ReportDate] FROM [dbo].[$table] WHERE [StockID] = $stockID" | Select-Object ReportDate)
+                $excludeDates = @(Invoke-Sqlcmd @Script:db -Query "SELECT [ReportDate] FROM [dbo].[$table] WHERE [StockID] = $stockID" | `
+                    Select-Object ReportDate | Foreach-Object { $_.ReportDate.ToString("yyyy-MM-dd") })
 
                 ### 09/24/2023 - Found an issue where some statements aren't filed quarterly.
                 ### This results in a [PSCustomObject] being returned as opposed to an [Array].
