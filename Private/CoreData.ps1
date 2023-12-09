@@ -16,32 +16,33 @@ if ($PSVersionTable.PSVersion.Major -ge 6)
 $Script:database = "FINDATA"
 $Script:db = @{Database = $Script:database}
 
-$Script:chromeVer = "117"
+$Script:chromeVer = "120"
 $Script:userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/$Script:chromeVer.0.0.0 Safari/537.36"
 
 
 ### Yahoo persistent cookies.  Used for pulling historical income statements, balance sheets, etc.
 #############################################################################################################################
 $Script:yahoo = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-$Script:yahoo.UserAgent = "$Script:userAgent Edg/117.0.2045.47"
-
+$Script:yahoo.UserAgent = "$Script:userAgent Edg/$Script:chromeVer.0.0.0"
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("tbla_id", "9f80a4de-0d1a-4b97-b8cb-b3475516aae0-tuctbff8c86", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("gam_id", "y-KAUTtaVE2uJLGViifp79Sam62DDq3Rte~A", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("F", "d=XoCClfE9vDB8a4MEsBF1TF8NePkAg.L.iSkoDS9QRxTjQ7F8dAgqKdNkt30d0GA-", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("PH", "l=en-US", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("Y", "v=1&n=2ofbjh0keh4m1&l=pvxtxkmdvhspmad48f2du1gbun344m8wcgh1nun0/o&p=02ivvvv00000000&r=19q&intl=us", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("GUC", "AQEACAJlB1RlM0IkOwTh&s=AQAAACEJYcnE&g=ZQYHKw", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAJUB2UzZdxS0iMA_eMBAAcIBAcGZXRw9asID_p-etaFzpKSL3u9MGXr9gkBBwoBGQ&S=AQAAAt6Z5jWg7gUuaaBTHhu6u4k", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A3", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAJUB2UzZdxS0iMA_eMBAAcIBAcGZXRw9asID_p-etaFzpKSL3u9MGXr9gkBBwoBGQ&S=AQAAAt6Z5jWg7gUuaaBTHhu6u4k", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("ucs", "tr=1696470332000", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("OTH", "v=2&s=2&d=eyJraWQiOiIwMTY0MGY5MDNhMjRlMWMxZjA5N2ViZGEyZDA5YjE5NmM5ZGUzZWQ5IiwiYWxnIjoiUlMyNTYifQ.eyJjdSI6eyJndWlkIjoiQk9XQ0paTFVXUlpORFY2MlNRWlpBQ1ZIMkUiLCJwZXJzaXN0ZW50Ijp0cnVlLCJzaWQiOiI1VTZoRXdDalNWb0gifX0.fXs93jlg916uB8jy0KDebZZZrVbQoUtZFAM596YNvFbYXvJAMHhICZ4UT-6-6diYX6JN4hM0BuN97T5YRxeNq8LmJX8Nd1CEjgBAeiApgF0BZnxYvrhBAteAJu-iMOy8sEE8R8ENkr1OlN6vtMsWNyWscdhQd5ptqVtPDmG1-JQ", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("T", "af=JnRzPTE2OTYzODM5MzMmcHM9ZlJqeUhpa2Z1cm1Lc0JYdVdwckhhZy0t&d=bnMBeWFob28BZwFCT1dDSlpMVVdSWk5EVjYyU1FaWkFDVkgyRQFhYwFBS3BVMmRvWQFhbAFid2hlZWxlckB3aGVlbGVydGVjaGluYy5jb20Bc2MBZGVza3RvcF93ZWIBZnMBTllXZUhpTmxCZ2NoAXp6ATlPTUhsQkE3RQFhAVFBRQFsYXQBaGNnQmxCAW51ATA-&kt=EAAASc8ZQLUKTfF_8yeGjY46g--~I&ku=FAANFdDKWjTOxkcoFS_L7dGWJi9MQMf4wZ2cwbjhz6OZbemFjH3R9eh4MJZVh0SSYI3kBPTXoL6Hw3FRMeDksKMu9wTBblA3wkZrUqqKCk208uZm7X67dNEnlObtKxU_SnO1bYqxweUa6c7tdAUKdR5Xb4SwtK8AN5D_aRja9yr7Uo-~E", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("cmp", "t=1696383935&j=0&u=1YNN", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("gpp", "DBAA", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("gpp_sid", "-1", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1S", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAJUB2UzZdxS0iMA_eMBAAcIBAcGZXRw9asID_p-etaFzpKSL3u9MGXr9gkBBwoBGQ&S=AQAAAt6Z5jWg7gUuaaBTHhu6u4k", "/", ".yahoo.com")))
-$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("PRF", "t%3DMSFT%252B%255EGSPC%252BEPM%252BCBOE%252BOXLC%252BBF-B%252BBF-A%252BBFB231215C00065000%252BK%252BEFX%252BULTA%252BLHX%252BCB%252BMO%252BBHP%26newChartbetateaser%3D1", "/", ".finance.yahoo.com")))
-
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("gam_id", "y-IsFaU2lG2uIjybI4.7p6cYm6pVFv4SurNGzsbJ.sMgtNI0CKwQ---A", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("axids", "gam=y-IsFaU2lG2uIjybI4.7p6cYm6pVFv4SurNGzsbJ.sMgtNI0CKwQ---A&dv360=eS1qWVJEeTVKRTJ1RU9pM0NiTmhCTldsWS5Yd1lxQW03YzNNMHdHMy43NThpWGllQjE1eU9UOTd6SUI5VnIwZmhQMHpfan5B", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("PRF", "t%3DMSFT%252BCCL%252B%255EGSPC%252BEPM%252BCBOE%252BOXLC%252BBF-B%252BBF-A%252BBFB231215C00065000%252BK%252BEFX%252BULTA%252BLHX%252BCB%252BMO%26newChartbetateaser%3D1", "/", ".finance.yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("__gpi", "UID=00000da7dc668670:T=1702144729:RT=1702145655:S=ALNI_MYDNwlRZvKzUDfZ7WlJ4R3xbQ59yA", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("cmp", "t=1702148452&j=0&u=1YNN", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("OTH", "v=2&s=2&d=eyJraWQiOiIwMTY0MGY5MDNhMjRlMWMxZjA5N2ViZGEyZDA5YjE5NmM5ZGUzZWQ5IiwiYWxnIjoiUlMyNTYifQ.eyJjdSI6eyJndWlkIjoiQk9XQ0paTFVXUlpORFY2MlNRWlpBQ1ZIMkUiLCJwZXJzaXN0ZW50Ijp0cnVlLCJzaWQiOiJ0cE5BVVhjeU5LUDgifX0.g_X5oc1QVZL-CFyPryE9hfNij3FVQtSB6VprR97M45AoI8WyYb4yySV90vy2_k5QX2yISzY4x8IBfdT1G8UFaukHt1rLp9bibG_GYp2cOWLP71YS1kFNuJhnv_1wtgrGT8BLHdeh9-eThFBFYASHL1k2VR_PEJAg0f_VGLnG8aQ", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("T", "af=JnRzPTE3MDIxNDg0OTEmcHM9MmdhQVdIY3JKZHgzSW9LMnBpX01VZy0t&d=bnMBeWFob28BZwFCT1dDSlpMVVdSWk5EVjYyU1FaWkFDVkgyRQFhYwFBQ0NHUEl1VAFhbAFid2hlZWxlckB3aGVlbGVydGVjaGluYy5jb20Bc2MBZGVza3RvcF93ZWIBZnMBTllXZUhpTmxCZ2NoAXp6AUxtTGRsQkE3RQFhAVFBRQFsYXQBTG1MZGxCAW51ATA-&kt=EAA8CrNNLriB6tr_4cB3RpKMQ--~I&ku=FAAKj8vg5Kb6Nd1OmHr9WL5sbuKvNg8tQTWukhu7P9JYZwlbid6aYr538ncMpswYIvDd_XrtI9kXOjxsMZeIChRzKBMe4G.TuDD_CQqTzohnIweCI0M6yMMv.T0NprQP6O6HvgOBELdlLtH5bkSx47Jn00dT8xsB25zTo6_MqeqRJA-~E", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("GUCS", "ARk655Iu", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("GUC", "AQEACAJldf1lnkIkOwTh&s=AQAAADrCtc7f&g=ZXS5lQ", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAL9dWWeZdxS0iMA_eMBAAcIBAcGZXRw9asID95pvFB4xwOeLmnQqq8wVQkBBwoB1Q&S=AQAAAgrY3zAkh3ie85xbFRcS55M", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A3", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAL9dWWeZdxS0iMA_eMBAAcIBAcGZXRw9asID95pvFB4xwOeLmnQqq8wVQkBBwoB1Q&S=AQAAAgrY3zAkh3ie85xbFRcS55M", "/", ".yahoo.com")))
+$Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1S", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAL9dWWeZdxS0iMA_eMBAAcIBAcGZXRw9asID95pvFB4xwOeLmnQqq8wVQkBBwoB1Q&S=AQAAAgrY3zAkh3ie85xbFRcS55M", "/", ".yahoo.com")))
 
 ### API Keys, Tokens, URLs, and other access stuff
 #############################################################################################################################
