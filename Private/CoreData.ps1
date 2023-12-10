@@ -44,12 +44,32 @@ $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1", "d=AQABBAQHBmUCEIt
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A3", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAL9dWWeZdxS0iMA_eMBAAcIBAcGZXRw9asID95pvFB4xwOeLmnQqq8wVQkBBwoB1Q&S=AQAAAgrY3zAkh3ie85xbFRcS55M", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1S", "d=AQABBAQHBmUCEItxSrFKci_451atinRw9asFEgEACAL9dWWeZdxS0iMA_eMBAAcIBAcGZXRw9asID95pvFB4xwOeLmnQqq8wVQkBBwoB1Q&S=AQAAAgrY3zAkh3ie85xbFRcS55M", "/", ".yahoo.com")))
 
+
+### Yahoo "crumb".  Seems to be used as a validation check for some data items, such as calendars (splits, earnings, etc.)
+#############################################################################################################################
+$Script:yahooCrumb = (Invoke-WebRequest -Method GET -UseBasicParsing -Uri "https://query1.finance.yahoo.com/v1/test/getcrumb" -WebSession $Script:yahoo -ContentType "text/plain" -Headers @{
+    "path"="/v1/test/getcrumb"
+    "scheme"="https"
+    "accept"="*/*"
+    "accept-encoding"="gzip, deflate, br"
+    "accept-language"="en-US,en;q=0.9"
+    "origin"="https://finance.yahoo.com"
+    "referer"="https://finance.yahoo.com/calendar/"
+    "sec-ch-ua"="`"Not_A Brand`";v=`"8`", `"Chromium`";v=`"$Script:chromeVer`", `"Microsoft Edge`";v=`"$Script:chromeVer`""
+    "sec-ch-ua-mobile"="?0"
+    "sec-ch-ua-platform"="`"Windows`""
+    "sec-fetch-dest"="empty"
+    "sec-fetch-mode"="cors"
+    "sec-fetch-site"="same-site"
+}).Content
+
+
 ### API Keys, Tokens, URLs, and other access stuff
 #############################################################################################################################
 $Script:apiFRED = "33acf6fe5fefac3a25b436c5ca0cdc67"
 $Script:apiEOD = "64a48bc93a9988.68242263"
 $Script:apiFINRA = "MQBiADIANQBkADcANQBjAGYAOABiAGEANABmADIAOQA5AGMAZgA1ADoAewA0ADkAKgBAAGEAYwBqADIAOAAwACMAUQB+ACEA"
-$Script:apiStockAnalysis = "AAAAB3NzaC1yc2EAAAADAQABAAABAQDNK7jARJUOF5HofsvEkZi6T80FW4Shxx1k6tGnyw1bMyrGXOuMg7xx"
+# $Script:apiStockAnalysis = "AAAAB3NzaC1yc2EAAAADAQABAAABAQDNK7jARJUOF5HofsvEkZi6T80FW4Shxx1k6tGnyw1bMyrGXOuMg7xx"
 
 
 $Script:urlFRED = "https://api.stlouisfed.org/fred"
