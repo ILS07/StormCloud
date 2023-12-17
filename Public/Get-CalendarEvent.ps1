@@ -15,6 +15,16 @@ Function Get-CalendarEvent
         [String]$EndDate = $EndDate.AddDays(1).ToString("yyyy-MM-dd")
         $retSize = 250
 
+        ### This will be for "other" items to include based on the event.
+        ### For "Earnings", this will be whether "Before Open" or "After Close"
+        $extras = switch ($EventType)
+        {
+            "Earnings"
+            {
+
+            }
+        }
+
         $params = @{
             "Method" = "POST"
             "Uri" = "https://query1.finance.yahoo.com/v1/finance/visualization?crumb=$Script:yahooCrumb&lang=en-US&region=US&corsDomain=finance.yahoo.com"
