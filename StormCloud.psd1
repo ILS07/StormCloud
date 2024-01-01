@@ -92,6 +92,7 @@ FunctionsToExport = @(
     "New-FinanceDatabase"
     "Sync-SECFiling"
     "Sync-ShortInterest"
+    "Test-MarketOpen"
     "Update-ShortInterest"
 )
 
