@@ -4,8 +4,7 @@ Function Update-ShortInterest
     param
     (
         [Parameter()][String]$SettlementDate,
-        [Parameter(Mandatory)][String]$SaveCopyPath,
-        [Parameter()][Switch]$SaveFileOnly = $false
+        [Parameter()][String]$SaveCopyPath = ""
     )
 
     BEGIN
@@ -15,9 +14,9 @@ Function Update-ShortInterest
             [CmdletBinding()]
             param
             (
-                [Parameter(Mandatory)][String]$SettleDate,
-                [Parameter(Mandatory)][String]$SavePath,
-                [Parameter(Mandatory)][Switch]$FileOnly
+                [Parameter()][String]$SettleDate,
+                [Parameter()][String]$SavePath,
+                [Parameter()][Switch]$FileOnly
             )
 
             if ($null -ne ($short = (Get-ShortInterest -SettlementDate $SettleDate -SaveCopyPath $SavePath) | `
@@ -38,10 +37,12 @@ Function Update-ShortInterest
             }
         }
 
-        if ($null -eq (Invoke-Sqlcmd -Database BULKDATA -Query "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]"))
+        $select = "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]"
+
+        if ($null -eq (Invoke-Sqlcmd -Database BULKDATA -Query $select))
         { Update-ShortInterestSchedule }
 
-        $lastDay = (Invoke-Sqlcmd -Database BULKDATA -Query "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]")[-1].PublishDate
+        $lastDay = (Invoke-Sqlcmd -Database BULKDATA -Query $select)[-1].PublishDate
     }
 
     PROCESS
@@ -51,12 +52,12 @@ Function Update-ShortInterest
             $curMax = (Invoke-Sqlcmd @Script:db -Query "SELECT MAX([SettlementDate]) FROM [dbo].[SHORT_INTEREST]").Column1
 
             foreach ($x in @(Invoke-Sqlcmd -Database BULKDATA -Query `
-                "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE] WHERE [SettlementDate] > '$($curMax)' AND [PublishDate] <= (SELECT CAST(GETDATE() AS DATE))"))
-            { ProcessData -SettleDate $x.SettlementDate.ToString("yyyy-MM-dd") -SavePath $SaveCopyPath -FileOnly:$SaveFileOnly }
+                "$select WHERE [SettlementDate] > '$($curMax)' AND [PublishDate] <= (SELECT CAST(GETDATE() AS DATE))"))
+            { ProcessData -SettleDate $x.SettlementDate.ToString("yyyy-MM-dd") -SavePath $SaveCopyPath }
         }
         else
         {
-            try { ProcessData -SettleDate ([DateTime]$SettlementDate).ToString("yyyy-MM-dd") -SavePath $SaveCopyPath -FileOnly:$SaveFileOnly }
+            try { ProcessData -SettleDate ([DateTime]$SettlementDate).ToString("yyyy-MM-dd") -SavePath $SaveCopyPath }
             catch { return $null }
         }
 
