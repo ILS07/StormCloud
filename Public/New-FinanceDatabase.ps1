@@ -104,6 +104,7 @@ Function New-FinanceDatabase
             Invoke-Sqlcmd -InputFile "$root\Private\SQL\StoredProcs.sql"
             Write-Host "Complete" -ForegroundColor Green
             Write-Host "Creating views..." -NoNewline
+            Invoke-Sqlcmd -InputFile "$root\Private\SQL\BulkDataViews.sql"
             Invoke-Sqlcmd -InputFile "$root\Private\SQL\Views.sql"
             Write-Host "Complete" -ForegroundColor Green
             Write-Host "Populating base data..." -NoNewline
