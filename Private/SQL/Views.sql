@@ -1,6 +1,10 @@
 USE [FINDATA]
 GO
 
+-------------------------------------------------------------------------------------------------
+-- Stock Classification by Sector, Group, Industry, and Sub-Industry
+-------------------------------------------------------------------------------------------------
+
 CREATE VIEW [dbo].[vw_Stock_Classification]
 AS
     SELECT 
@@ -12,6 +16,10 @@ AS
 	,(SELECT [GicsLabel] FROM [dbo].[GICS] WHERE ([GicsNode] = ([dbo].[Stock].[GICS]).GetAncestor(0))) AS [SubIndustry]
 	FROM [dbo].[Stock]
 GO
+
+-------------------------------------------------------------------------------------------------
+-- Find any stocks that have NULL values for Pricing Data
+-------------------------------------------------------------------------------------------------
 
 CREATE VIEW [dbo].[vw_Null_Price_Data]
 AS
@@ -29,6 +37,10 @@ AS
 	WHERE ([dbo].[PRICE_HISTORY].[ClosePrice] IS NULL)
 GO
 
+-------------------------------------------------------------------------------------------------
+-- View Volume by Sector per Date
+-------------------------------------------------------------------------------------------------
+
 CREATE VIEW [dbo].[vw_Volume_By_Sector_By_Date]
 AS
 	SELECT
@@ -40,6 +52,10 @@ AS
 	INNER JOIN [dbo].[PRICE_HISTORY] AS [price] ON [price].[StockID] = [stk].[StockID]
 	GROUP BY [class].[Sector], [price].[PriceDate]
 GO
+
+-------------------------------------------------------------------------------------------------
+-- View SEC Filing Information
+-------------------------------------------------------------------------------------------------
 
 CREATE VIEW [dbo].[vw_SEC_Filing]
 AS

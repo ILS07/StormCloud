@@ -38,6 +38,9 @@ Function Update-ShortInterest
             }
         }
 
+        if ($null -eq (Invoke-Sqlcmd -Database BULKDATA -Query "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]"))
+        { Update-ShortInterestSchedule }
+
         $lastDay = (Invoke-Sqlcmd -Database BULKDATA -Query "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]")[-1].PublishDate
     }
 
