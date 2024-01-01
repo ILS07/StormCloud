@@ -33,7 +33,7 @@ AS
 	,[dbo].[PRICE_HISTORY].[AdjClosePrice]
 	,[dbo].[PRICE_HISTORY].[Volume]
 	FROM [dbo].[STOCK] AS [stk]
-	INNER JOIN  [dbo].[PRICE_HISTORY] ON [stk].[StockID] = dbo.[PRICE_HISTORY].[StockID]
+	INNER JOIN [dbo].[PRICE_HISTORY] ON [stk].[StockID] = dbo.[PRICE_HISTORY].[StockID]
 	WHERE ([dbo].[PRICE_HISTORY].[ClosePrice] IS NULL)
 GO
 

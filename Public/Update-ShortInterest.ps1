@@ -40,7 +40,10 @@ Function Update-ShortInterest
         $select = "SELECT * FROM [dbo].[SHORT_INTEREST_SCHEDULE]"
 
         if ($null -eq (Invoke-Sqlcmd -Database BULKDATA -Query $select))
-        { Update-ShortInterestSchedule }
+        {
+            try { Update-ShortInterestSchedule }
+            catch { }
+        }
 
         $lastDay = (Invoke-Sqlcmd -Database BULKDATA -Query $select)[-1].PublishDate
     }
@@ -62,7 +65,7 @@ Function Update-ShortInterest
         }
 
         ### If at or beyond the last date on the schedule, update the schedule for the new reporting year.
-        if ([System.Datetime]::Today.Date -ge $lastDay)
+        if ($null -ne $lastDay -AND [System.Datetime]::Today.Date -ge $lastDay)
         { Update-ShortInterestSchedule }
     }
 }
