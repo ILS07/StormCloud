@@ -11,6 +11,9 @@ Function Get-StockFundamentalData
 
     BEGIN
     {
+        if (!($Script:yahooAuth))
+        { return $null }
+
         [System.Collections.ArrayList]$output = @()
         $sym = $Symbol.Replace(".","-")
 
