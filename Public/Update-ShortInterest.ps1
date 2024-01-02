@@ -41,8 +41,14 @@ Function Update-ShortInterest
 
         if ($null -eq (Invoke-Sqlcmd -Database BULKDATA -Query $select))
         {
-            try { Update-ShortInterestSchedule }
-            catch { }
+            try
+            {
+                Update-ShortInterestSchedule
+
+                if ($null -eq (Invoke-Sqlcmd -Database BULKDATA -Query $select))
+                { return $null }
+            }
+            catch { return $null }
         }
 
         $lastDay = (Invoke-Sqlcmd -Database BULKDATA -Query $select)[-1].PublishDate
