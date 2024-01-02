@@ -11,8 +11,8 @@ Function Get-CalendarEvent
 
     BEGIN
     {
-        if (!($Script:yahooAuth))
-        { return $null }
+        # if (!($Script:yahooAuth))
+        # { return $null }
 
         [String]$StartDate = $StartDate.ToString("yyyy-MM-dd")
         [String]$EndDate = $EndDate.AddDays(1).ToString("yyyy-MM-dd")

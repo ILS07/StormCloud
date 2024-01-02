@@ -44,7 +44,7 @@ $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A3", "d=AQABBDVeW2UCEKT
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1S", "d=AQABBDVeW2UCEKTJfd3g84Iobqw-vxgVZTgFEgEACAJflWXAZdxS0iMA_eMBAAcINV5bZRgVZTgID1e5lpuMm21f-C3rxPzheQkBBwoBbg&S=AQAAAhTuzTqYth8gWNqvKyEDuFQ", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("PRF", "t%3DMSFT%26newChartbetateaser%3D1", "/", ".finance.yahoo.com")))
 
-try { Get-StockFundamentalData -Symbol MSFT -Report IncomeStatement | Select-Object -First 1 } catch { $Script:yahooAuth = $false }
+# try { Get-StockFundamentalData -Symbol MSFT -Report IncomeStatement | Select-Object -First 1 } catch { $Script:yahooAuth = $false }
 
 ### Yahoo "crumb".  Seems to be used as a validation check for some data items, such as calendars (splits, earnings, etc.)
 #############################################################################################################################

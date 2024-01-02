@@ -6,6 +6,12 @@ Function Add-StockFundamentalData
         [Parameter()][ValidateSet("IncomeStatement","BalanceSheet","CashFlowStatement")][String[]]$Report
     )
 
+    BEGIN
+    {
+        # if (!($Script:yahooAuth))
+        # { return $null }
+    }
+
     PROCESS
     {
         if ($Report.Count -eq 0)

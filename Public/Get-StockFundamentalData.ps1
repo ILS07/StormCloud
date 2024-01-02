@@ -4,15 +4,13 @@ Function Get-StockFundamentalData
     param
     (
         [Parameter(Mandatory)][String]$Symbol,
-        [Parameter(Mandatory)]
-            [ValidateSet("IncomeStatement","BalanceSheet","CashFlowStatement")][String[]]$Report
-        # [Parameter()][ValidateSet("Quarter","Annual")]$Period = "Quarter"
+        [Parameter(Mandatory)][ValidateSet("IncomeStatement","BalanceSheet","CashFlowStatement")][String[]]$Report
     )
 
     BEGIN
     {
-        if (!($Script:yahooAuth))
-        { return $null }
+        # if ($Script:yahooAuth -eq $false)
+        # { return $null }
 
         [System.Collections.ArrayList]$output = @()
         $sym = $Symbol.Replace(".","-")
@@ -23,16 +21,6 @@ Function Get-StockFundamentalData
 
         if ((Get-PSCallStack)[1].Command -eq "Add-StockFundamentalData")
         { $stockID = (Invoke-Sqlcmd @Script:db -Query "SELECT [StockID] FROM [dbo].[STOCK] WHERE [StockSymbol] = '$Symbol'").StockID }
-
-        ### Forcing to "quarterly" for now.  Having "annual" as an option could lead to context mixing in the database.
-        ### Annual and TTM values can be derived from the quarters in SQL or Power BI anyway, so may not worry about it.
-        # $frequency = switch ($Period)
-        # {
-        #     "Quarter" { "quarterly" }
-        #     "Annual" { "annual" }
-        # }
-
-        $frequency = "quarterly"
 
         $income = @(
             "OperatingRevenue"
@@ -418,7 +406,7 @@ Function Get-StockFundamentalData
     
             ### Session uses a persistent cookie for Yahoo Finance access, see CoreData.ps1 for info
             $data = (Invoke-RestMethod -Method GET -WebSession $Script:yahoo `
-                -Uri ($uriPrefix + (($body | ForEach-Object { "$frequency$_" }) -join "%2C") + $uriSuffix)).timeseries.result
+                -Uri ($uriPrefix + (($body | ForEach-Object { "quarterly$_" }) -join "%2C") + $uriSuffix)).timeseries.result
             
             $dates = $data[0].timestamp | ForEach-Object { [System.DateTimeOffset]::FromUnixTimeSeconds($_).Date.ToString("yyyy-MM-dd") }
     

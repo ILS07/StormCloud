@@ -10,9 +10,6 @@ Function Add-StockHistoricalData
 
     BEGIN
     {
-        if (!($Script:yahooAuth))
-        { return $null }
-
         ### Record Type, SQL Table, Fields to insert on
         $data = @{
         "Price" = @("PRICE_HISTORY","([StockID],[PriceDate],[OpenPrice],[HighPrice],[LowPrice],[ClosePrice],[AdjClosePrice],[Volume])")
