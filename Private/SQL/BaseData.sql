@@ -1,6 +1,9 @@
 USE [FINDATA]
 GO
 
+INSERT INTO [dbo].[PBI_STATS] VALUES
+    (0,0,0,0,0)
+
 INSERT INTO [dbo].[GICS] VALUES
     ('10','/1/','Energy'),
     ('1010','/1/1/','Energy'),

@@ -10,6 +10,19 @@ GO
 -- )
 -- GO
 
+CREATE TABLE [dbo].[PBI_STATS] (
+    [StatsID] BIT IDENTITY(1,1) NOT NULL
+    ,[SymCount] INT NOT NULL
+    ,[SymActive] INT NOT NULL
+    ,[SymInactive] INT NOT NULL
+    ,[SymOptions] INT NOT NULL
+    ,[SymDividends] INT NOT NULL
+
+    CONSTRAINT [PK_PBI_STATS] PRIMARY KEY ([StatsID])
+    ,CONSTRAINT [CK_PBI_STATS] CHECK ([StatsID] = 1)
+)
+GO
+
 CREATE TABLE [dbo].[SIC_OFFICE] (
     [OfficeID] TINYINT IDENTITY(1,1) NOT NULL
     ,[OfficeName] VARCHAR(50) NOT NULL

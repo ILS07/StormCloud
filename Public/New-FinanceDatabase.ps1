@@ -101,11 +101,14 @@ Function New-FinanceDatabase
             Write-Host "Complete" -ForegroundColor Green
             Write-Host "Creating stored procedures..." -NoNewline
             Invoke-Sqlcmd -InputFile "$root\Private\SQL\BulkDataStoredProcs.sql"
-            Invoke-Sqlcmd -InputFile "$root\Private\SQL\StoredProcs.sql"
+            Invoke-Sqlcmd -InputFile "$root\Private\SQL\DataStoredProcs.sql"
             Write-Host "Complete" -ForegroundColor Green
             Write-Host "Creating views..." -NoNewline
             Invoke-Sqlcmd -InputFile "$root\Private\SQL\BulkDataViews.sql"
-            Invoke-Sqlcmd -InputFile "$root\Private\SQL\Views.sql"
+            Invoke-Sqlcmd -InputFile "$root\Private\SQL\DataViews.sql"
+            Write-Host "Complete" -ForegroundColor Green
+            Write-Host "Creating data triggers..." -NoNewline
+            Invoke-Sqlcmd -InputFile "$root\Private\SQL\DataTriggers.sql"
             Write-Host "Complete" -ForegroundColor Green
             Write-Host "Populating base data..." -NoNewline
             Invoke-Sqlcmd -InputFile "$root\Private\SQL\BaseData.sql"
