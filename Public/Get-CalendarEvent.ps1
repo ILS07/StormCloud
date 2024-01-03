@@ -5,8 +5,8 @@ Function Get-CalendarEvent
     (
         [Parameter()][ValidateSet("Earnings","Splits")][String]$EventType = "Earnings",
         [Parameter()][DateTime]$StartDate = [System.DateTime]::Today,
-        [Parameter()][DateTime]$EndDate = $StartDate.AddDays(5)
-
+        [Parameter()][DateTime]$EndDate = $StartDate.AddDays(6),
+        [Parameter()][int16]$ReturnSize = 250
     )
 
     BEGIN
@@ -16,7 +16,6 @@ Function Get-CalendarEvent
 
         [String]$StartDate = $StartDate.ToString("yyyy-MM-dd")
         [String]$EndDate = $EndDate.AddDays(1).ToString("yyyy-MM-dd")
-        $retSize = 250
 
         ### This will be for "other" items to include based on the event.
         ### For "Earnings", this will be whether "Before Open" or "After Close"
@@ -24,7 +23,15 @@ Function Get-CalendarEvent
         {
             "Earnings"
             {
+                "'eventname',
+                'startdatetimetype',
+                'epsestimate'"
+            }
 
+            "Splits"
+            {
+                "'old_share_worth',
+                'share_worth'"
             }
         }
 
@@ -39,7 +46,8 @@ Function Get-CalendarEvent
                 'sortField': 'startdatetime',
                 'includeFields': [
                     'ticker',
-                    'startdatetime'
+                    'startdatetime',
+                    $extras
                 ],
                 'query': {
                     'operator': 'and',
@@ -68,7 +76,7 @@ Function Get-CalendarEvent
                     ]
                 },
                 'offset': 0,
-                'size': $retSize
+                'size': $ReturnSize
             }"
         }
     }
@@ -83,17 +91,46 @@ Function Get-CalendarEvent
         {
             if ($returnData.Symbol -notcontains $x[0])
             {
-                [void]$returnData.Add(([PSCustomObject]@{
-                    "Event" = $EventType
-                    "Symbol" = $x[0]
-                    "EventDate" = ([DateTime]$x[1]).Date.AddDays(1).ToString("MM/dd/yyyy")
-                }))
+                switch ($EventType)
+                {
+                    "Earnings"
+                    {
+                        if ($x[2] -like "*Earnings Release")
+                        {
+                            [void]$returnData.Add(([PSCustomObject]@{
+                                "Event" = $EventType
+                                "Symbol" = $x[0]
+                                "Annoucement" = ([DateTime]$x[1]) #.ToString("MM/dd/yyyy h:mm tt")
+                                "EPSEstimate" = $x[4]
+                                # "EventTime" = ([DateTime]$x[1]).AddDays(1).ToString("hh:mm tt")
+                                # "MarketPeriod" = switch ($x[3])
+                                #     {
+                                #         "AMC" { "After Close" }
+                                #         "BMO" { "Before Open" }
+                                #         Default { "Not Specified" }
+                                #     }
+                            }))
+                        }
+                    }
+
+                    "Splits"
+                    {
+                        [void]$returnData.Add(([PSCustomObject]@{
+                            "Event" = $EventType
+                            "Symbol" = $x[0]
+                            "EventDate" = ([DateTime]$x[1]).Date.AddDays(1).ToString("MM/dd/yyyy")
+                            "Split" = "$($x[3]) : $($x[2])"
+                            "SplitRatio" = $x[3] / $x[2]
+                        }))
+                    }
+                }
+                
             }
         }
 
         return $returnData
 
-        # if ($total -le $retSize)
+        # if ($total -le $ReturnSize)
         # { return $returnData }
         # else
         # {
