@@ -17,6 +17,10 @@ CREATE TABLE [dbo].[PBI_STATS] (
     ,[SymInactive] INT NOT NULL
     ,[SymOptions] INT NOT NULL
     ,[SymDividends] INT NOT NULL
+    ,[FREDCount] INT NOT NULL
+    ,[FREDActive] INT NOT NULL
+    ,[FREDInactive] INT NOT NULL
+    ,[MarketIdxCount] SMALLINT NOT NULL
 
     CONSTRAINT [PK_PBI_STATS] PRIMARY KEY ([StatsID])
     ,CONSTRAINT [CK_PBI_STATS] CHECK ([StatsID] = 1)
