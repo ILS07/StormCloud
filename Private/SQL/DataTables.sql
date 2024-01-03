@@ -11,7 +11,7 @@ GO
 -- GO
 
 CREATE TABLE [dbo].[PBI_STATS] (
-    [StatsID] BIT IDENTITY(1,1) NOT NULL
+    [StatsID] INT IDENTITY(1,1) NOT NULL
     ,[SymCount] INT NOT NULL
     ,[SymActive] INT NOT NULL
     ,[SymInactive] INT NOT NULL
