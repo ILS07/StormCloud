@@ -90,6 +90,7 @@ FunctionsToExport = @(
     "Get-StockListingChange"
     "Get-StockName"
     "New-FinanceDatabase"
+    "Split-Stock"
     "Sync-SECFiling"
     "Sync-ShortInterest"
     "Test-MarketOpen"

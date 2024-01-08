@@ -160,10 +160,43 @@ CREATE TABLE [dbo].[STOCK] (
 )
 GO
 
--- CREATE TABLE [dbo].[STOCK_STATS] (
---     [StockID] INT NOT NULL
-    
--- )
+CREATE TABLE [dbo].[STOCK_STATS] (
+    [StockID] INT NOT NULL
+    ,[StatsDate] DATE NOT NULL
+    ,[MarketCap] BIGINT NOT NULL -- [INCOME_STATEMENT].[DilutedAverageShares] * [PRICE_HISTORY].[ClosePrice] WHERE [PriceDate] = [INCOME_STATEMENT].[ReportDate]
+    ,[EnterpriseValue] BIGINT NOT NULL -- [STOCK_STATS].[MarketCap] + [BALANCE_SHEET].[TotalDebt] - [BALANCE_SHEET].[CashCashEquivalentsAndShortTermInvestments]
+    ,[Prive_Earnings_Ratio] DECIMAL(9,4) NOT NULL -- TOP 1 [PRICE_HISTORY].[ClosePrice] (ORDER BY [PriceDate] DESC) / [INCOME_STATEMENT].[DilutedEPS]
+    ,[Price_Sales_Ratio] DECIMAL(9,4) NOT NULL -- [STOCK_STATS].[MarketCap] / [INCOME_STATEMENT].[OperatingRevenue] (Last 4 Quarters)
+    ,[BookValuePerShare] DECIMAL(9,4) -- = [BALANCE_SHEET].[CommonStockEquity] / [INCOME_STATEMENT].[DilutedAverageShares]
+    ,[EarningsPerShare] DECIMAL(9,2) NOT NULL -- [INCOME_STATEMENT].[BasicEPS]
+    ,[DilutedEarningsPerShare] DECIMAL(9,2) NOT NULL -- [INCOME_STATEMENT].[DilutedEPS]
+    ,[Price_Book_Ratio] DECIMAL(9,4) NOT NULL -- [STOCK_STATS].[MarketCap] / [BALANCE_SHEET].[ShareholdersEquity]
+    ,[Price_FreeCashFlow_Ratio] DECIMAL(9,4) NOT NULL -- [STOCK_STATS].[MarketCap] / [CASH_FLOW].[FreeCashFlow]
+    ,[Price_OpCashFlow_Ratio] DECIMAL(9,4) NOT NULL -- [STOCK_STATS].[MarketCap] / [CASH_FLOW].[OperatingCashFlow]
+    ,[CurrentRatio] DECIMAL(9,4) NOT NULL -- [BALANCE_SHEET].[CurrentAssets] / [BALANCE_SHEET].[CurrentLiabilities]
+
+    CONSTRAINT [PK_STOCK_STATS] PRIMARY KEY CLUSTERED ([StockID] ASC,[StatsDate] DESC)
+)
+GO
+
+CREATE TABLE [dbo].[EARNINGS_CALENDAR] (
+    [StockID] INT NOT NULL
+    ,[Scheduled] DATETIME2(0) NOT NULL
+    ,[EPSEstimate] DECIMAL(8,2) NULL
+
+    CONSTRAINT [PK_STOCK_PRICE_HISTORY] PRIMARY KEY CLUSTERED ([StockID] ASC,[Scheduled] DESC)
+)
+GO
+
+CREATE TABLE [dbo].[SPLIT_CALENDAR] (
+    [StockID] INT NOT NULL
+    ,[SplitDate] DATETIME2(0) NOT NULL
+    ,[SplitRatio] VARCHAR(24) NOT NULL
+    ,[SplitFactor] DECIMAL(20,16)
+
+    CONSTRAINT [PK_STOCK_PRICE_HISTORY] PRIMARY KEY CLUSTERED ([StockID] ASC,[Scheduled] DESC)
+)
+GO
 
 CREATE TABLE [dbo].[SEC_FILING_INDEX] (
     [StockID] INT NOT NULL
@@ -206,7 +239,7 @@ GO
 CREATE TABLE [dbo].[SPLIT_HISTORY] (
 	[StockID] INT NOT NULL
 	,[SplitDate] DATE NOT NULL
-	,[SplitRatio] VARCHAR(20) NOT NULL
+	,[SplitRatio] VARCHAR(24) NOT NULL
 
 	CONSTRAINT [PK_STOCK_SPLIT_HISTORY] PRIMARY KEY CLUSTERED ([StockID] ASC,[SplitDate] DESC)
 	,CONSTRAINT [FK_STOCK_SPLIT_HISTORY_StockID] FOREIGN KEY ([StockID]) REFERENCES [STOCK]([StockID]) ON DELETE CASCADE

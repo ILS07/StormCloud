@@ -9,9 +9,6 @@ Function Get-StockFundamentalData
 
     BEGIN
     {
-        # if ($Script:yahooAuth -eq $false)
-        # { return $null }
-
         [System.Collections.ArrayList]$output = @()
         $sym = $Symbol.Replace(".","-")
 

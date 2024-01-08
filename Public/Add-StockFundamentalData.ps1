@@ -6,12 +6,6 @@ Function Add-StockFundamentalData
         [Parameter()][ValidateSet("IncomeStatement","BalanceSheet","CashFlowStatement")][String[]]$Report
     )
 
-    BEGIN
-    {
-        # if (!($Script:yahooAuth))
-        # { return $null }
-    }
-
     PROCESS
     {
         if ($Report.Count -eq 0)
@@ -45,7 +39,7 @@ Function Add-StockFundamentalData
                 catch { }
 
                 if ($Report.Count -gt 1)
-                { Start-Sleep -Milliseconds 750 }
+                { Start-Sleep -Milliseconds 500 }
             }
         }
         else

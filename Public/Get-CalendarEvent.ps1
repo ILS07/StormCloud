@@ -5,8 +5,7 @@ Function Get-CalendarEvent
     (
         [Parameter()][ValidateSet("Earnings","Splits")][String]$EventType = "Earnings",
         [Parameter()][DateTime]$StartDate = [System.DateTime]::Today,
-        [Parameter()][DateTime]$EndDate = $StartDate.AddDays(6),
-        [Parameter()][int16]$ReturnSize = 250
+        [Parameter()][DateTime]$EndDate = $StartDate.AddDays(7)
     )
 
     BEGIN
@@ -76,7 +75,7 @@ Function Get-CalendarEvent
                     ]
                 },
                 'offset': 0,
-                'size': $ReturnSize
+                'size': 250
             }"
         }
     }
@@ -102,13 +101,6 @@ Function Get-CalendarEvent
                                 "Symbol" = $x[0]
                                 "Annoucement" = ([DateTime]$x[1]) #.ToString("MM/dd/yyyy h:mm tt")
                                 "EPSEstimate" = $x[4]
-                                # "EventTime" = ([DateTime]$x[1]).AddDays(1).ToString("hh:mm tt")
-                                # "MarketPeriod" = switch ($x[3])
-                                #     {
-                                #         "AMC" { "After Close" }
-                                #         "BMO" { "Before Open" }
-                                #         Default { "Not Specified" }
-                                #     }
                             }))
                         }
                     }
@@ -118,9 +110,9 @@ Function Get-CalendarEvent
                         [void]$returnData.Add(([PSCustomObject]@{
                             "Event" = $EventType
                             "Symbol" = $x[0]
-                            "EventDate" = ([DateTime]$x[1]).Date.AddDays(1).ToString("MM/dd/yyyy")
-                            "Split" = "$($x[3]) : $($x[2])"
-                            "SplitRatio" = $x[3] / $x[2]
+                            "SplitDate" = ([DateTime]$x[1]).Date.AddDays(1).ToString("MM/dd/yyyy")
+                            "SplitRatio" = "$($x[3]):$($x[2])"
+                            "SplitFactor" = $x[3] / $x[2]
                         }))
                     }
                 }
@@ -137,20 +129,5 @@ Function Get-CalendarEvent
 
 
         # }
-
-
-        # foreach ($x in ((Invoke-RestMethod @params).finance.result.documents.rows))
-        # {
-        #     if ($returnData -notcontains $x)
-        #     {
-        #         [void]$returnData.Add(([PSCustomObject]@{
-        #             "Event" = $EventType
-        #             "Symbol" = $x[0]
-        #             "EventDate" = ([DateTime]$x[1]).Date.AddDays(1)
-        #         }))
-        #     }
-        # }
-
-        # return $returnData
     }
 }

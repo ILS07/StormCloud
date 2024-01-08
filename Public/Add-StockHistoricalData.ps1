@@ -51,51 +51,13 @@ Function Add-StockHistoricalData
                 if ($null -eq ($parameters = Set-HistoricalDataParameters -ItemData $x -RecordType $y))
                 { continue }
 
-                # $parameters = [ordered]@{Symbol = $x.StockSymbol; $y = $true}
-
-                # ### Check if a stock has an entry or not by the "Last" property data type, and set the StartDate accordingly.
-                # switch ($x.Last.GetTypeCode())
-                # {
-                #     "DateTime"
-                #     {
-                #         ### Skip a stock if the date of the selected record is alredy current for the Friday before a weekend.
-                #         if ((([System.DateTime]::Today.DayOfWeek -eq "Saturday") -AND ([System.DateTime]$x.Last) -eq [System.DateTime]::Today.AddDays(-1)) -OR `
-                #         (([System.DateTime]::Today.DayOfWeek -eq "Sunday") -AND ([System.DateTime]$x.Last) -eq [System.DateTime]::Today.AddDays(-2)))
-                #         { continue }
-        
-                #         ### Skip a stock if the LastPrice date is the same as today's date.
-                #         if ($y -eq "Price" -AND $x.Last -eq [DateTime]::Today.Date)
-                #         { continue }
-
-                #         $parameters.Add("StartDate",($x.Last.AddDays(1)))
-                #         break
-                #     }
-                #     "DBNull"
-                #     {
-                #         $parameters.Add("StartDate","1/1/1920")
-                #         $x.Last = [DateTime]"1/1/1920"
-                #         break
-                #     }
-                # }
-
-                # ### Check market hours to know to avoid intraday activity that could result in incomplete volume or wrong high/low for the day.
-                # $utcNow = ([System.DateTimeOffset]([System.DateTime]::Now)).UtcDateTime
-
-                # if (@("Sunday","Saturday") -notcontains $utcNow.DayOfWeek)
-                # {
-                #     if ($utcNow.ToString("HH:mm:ss") -gt "20:01:00")
-                #     { $parameters.Add("EndDate",([System.DateTime]::Today.AddDays(1))) }
-                #     else { $parameters.Add("EndDate",([System.DateTime]::Today)) }
-                # }
-                # else { $parameters.Add("EndDate",([System.DateTime]::Today)) }
-
-                ### If all else has failed, check if there's no data and skip the stock if so.
+                ### Check if there's no data and skip the stock if so.
                 if (($info = @(Get-StockHistoricalData @parameters | Where-Object { [DateTime]$_.Date -gt $x.Last })).Count -eq 0)
                 { continue }
 
-                ### Price is the heavy transaction hitter, so if there's more than 100 records, we'll use BULK INSERT from a
+                ### Price is the heavy transaction hitter, so if there's more than 1000 records, we'll use BULK INSERT from a
                 ### CSV to help keep the transaction log size down. Anything a thousand or less will go through the loop for a max INSERT query.
-                if ($info.Count -gt 100 -AND $y -eq "Price")
+                if ($info.Count -gt 1000 -AND $y -eq "Price")
                 {
                     ### Use the folder holding the MDF file for temp storage of CSV since it's a known quantity.
                     ### Column names must be specified in-line for BULK, so can take some massaging to get them to align.

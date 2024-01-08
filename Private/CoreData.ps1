@@ -19,8 +19,6 @@ $Script:db = @{Database = $Script:database}
 $Script:chromeVer = "120"
 $Script:userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/$Script:chromeVer.0.0.0 Safari/537.36"
 
-[Bool]$Script:yahooAuth = $true
-
 ### Yahoo persistent cookies.  Used for pulling historical income statements, balance sheets, etc.
 #############################################################################################################################
 $Script:yahoo = New-Object Microsoft.PowerShell.Commands.WebRequestSession
@@ -43,8 +41,6 @@ $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1", "d=AQABBDVeW2UCEKT
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A3", "d=AQABBDVeW2UCEKTJfd3g84Iobqw-vxgVZTgFEgEACAJflWXAZdxS0iMA_eMBAAcINV5bZRgVZTgID1e5lpuMm21f-C3rxPzheQkBBwoBbg&S=AQAAAhTuzTqYth8gWNqvKyEDuFQ", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("A1S", "d=AQABBDVeW2UCEKTJfd3g84Iobqw-vxgVZTgFEgEACAJflWXAZdxS0iMA_eMBAAcINV5bZRgVZTgID1e5lpuMm21f-C3rxPzheQkBBwoBbg&S=AQAAAhTuzTqYth8gWNqvKyEDuFQ", "/", ".yahoo.com")))
 $Script:yahoo.Cookies.Add((New-Object System.Net.Cookie("PRF", "t%3DMSFT%26newChartbetateaser%3D1", "/", ".finance.yahoo.com")))
-
-# try { Get-StockFundamentalData -Symbol MSFT -Report IncomeStatement | Select-Object -First 1 } catch { $Script:yahooAuth = $false }
 
 ### Yahoo "crumb".  Seems to be used as a validation check for some data items, such as calendars (splits, earnings, etc.)
 #############################################################################################################################

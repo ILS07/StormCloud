@@ -4,16 +4,28 @@ Function Split-Stock
     param
     ( 
         [Parameter(Mandatory)][String]$Symbol,
-        [Parameter()][String]$SplitRatio,
-        [Parameter()][DateTime]$SplitDate
+        [Parameter(Mandatory)][String]$SplitRatio,
+        [Parameter(Mandatory)][DateTime]$SplitDate
     )
 
-    $vals = @($SplitRatio -split ":")
-    $split = [int]$vals[0]/[int]$vals[1]
-    
-    
-    # Apply to PRICE_HISTORY, SHORT_INTEREST, ??
-    # Check on why Yahoo's math doesn't check out on splits. It's close, but not right.
-    # On second thought, check if Yahoo's price history is intact post-split and remove-n-replace.
-    $split
+    PROCESS
+    {
+        if ($null -ne ($stkID = Invoke-Sqlcmd @Script:db -Query "SELECT [StockID] FROM [dbo].[STOCK] WHERE [StockSymbol] = '$Symbol'"))
+        { break }
+
+        $vals = @($SplitRatio -split ":")
+        $factor = [int]$vals[0]/[int]$vals[1]
+
+        Invoke-Sqlcmd @Script:database -Query "UPDATE [dbo].[PRICE_HISTORY] SET 
+            [OpenPrice] = ([OpenPrice] / $factor)
+            ,[HighPrice] = ([HighPrice] / $factor)
+            ,[LowPrice] = ([LowPrice] / $factor)
+            ,[ClosePrice] = ([ClosePrice] / $factor)
+            ,[AdjClosePrice] = ([AdjClosePrice] / $factor)
+            ,[Volume] = ([Volume] * $factor)
+                WHERE [StockID] = $stkID AND [PriceDate] < '$($SplitDate.Date)'"
+
+        ### May need to do the same for short interest.
+        ### Waiting for an alignment of events to check.        
+    }
 }
